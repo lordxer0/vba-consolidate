@@ -27,10 +27,10 @@ Sub consolidadoGeneral()
     
 
     Dim cuentaEvaluada As String
+    Dim NombreCuentaEvaluada As String
     
     Dim limpieza As Range
     Set limpieza = Sheets("operaciones").Range("p1")
-    
     
     For i = 1 To cuentasAEvaluar.Application.WorksheetFunction.CountA(cuentasAEvaluar)
         
@@ -49,6 +49,7 @@ Sub consolidadoGeneral()
             
         'como los datos estan en texto los comvertimos a numero limpiando los valores de caracteres no imprimibles
             
+             
             For h = 2 To Application.WorksheetFunction.CountA(hojaDeOperaciones.Range("D:D"))
             
                 If hojaDeOperaciones.Cells(h, 11) <> "" Then
@@ -65,7 +66,7 @@ Sub consolidadoGeneral()
                 End If
                 
                 Next h
-            
+           
             'con los datos en un atabla aparte entonces vamos a hacer las sumas correspondientes para los rangos
             
             subTotalDebito = Application.WorksheetFunction.Sum(hojaDeOperaciones.Range("K2:K2000"))
@@ -73,7 +74,8 @@ Sub consolidadoGeneral()
             subTotalCredito = Application.WorksheetFunction.Sum(hojaDeOperaciones.Range("L2:L2000"))
             
             subTotalSaldo = Application.WorksheetFunction.Sum(hojaDeOperaciones.Range("M2:M2000"))
-        
+             
+        NombreCuentaEvaluada = hojaDeOperaciones.Range("F2")
         
         '-----------------------------------------------------------------------------
         'ahora hacemos consolidado de la hoja de taller
@@ -109,14 +111,21 @@ Sub consolidadoGeneral()
                  End If
                  
                  Next h
+          
              
              'con los datos en un atabla aparte entonces vamos a hacer las sumas correspondientes para los rangos
              
-             subTotalDebito = Application.WorksheetFunction.Sum(hojaDeOperaciones.Range("K2:K2000"))
+             subTotalDebito = subTotalDebito + Application.WorksheetFunction.Sum(hojaDeOperaciones.Range("K2:K2000"))
              
-             subTotalCredito = Application.WorksheetFunction.Sum(hojaDeOperaciones.Range("L2:L2000"))
+             subTotalCredito = subTotalCredito + Application.WorksheetFunction.Sum(hojaDeOperaciones.Range("L2:L2000"))
              
-             subTotalSaldo = Application.WorksheetFunction.Sum(hojaDeOperaciones.Range("M2:M2000"))
+             subTotalSaldo = subTotalSaldo + Application.WorksheetFunction.Sum(hojaDeOperaciones.Range("M2:M2000"))
+             
+             If NombreCuentaEvaluada = "" Then
+        
+                NombreCuentaEvaluada = hojaDeOperaciones.Range("F2")
+            
+             End If
              
         '---------------------------------------------------------------------
              
@@ -124,6 +133,7 @@ Sub consolidadoGeneral()
          
              Sheets("general").Cells(i + 1, 1) = cuentaEvaluada
              
+             Sheets("general").Cells(i + 1, 2) = NombreCuentaEvaluada
              
              If subTotalDebito = 0 Then
                 Sheets("general").Cells(i + 1, 3) = ""
@@ -144,12 +154,31 @@ Sub consolidadoGeneral()
              End If
              
          
-        
-            
-        
             
     Next i
-
-
+    
+    Sheets("general").Cells(2, 2) = "Cuenta - Nombre de la cuenta NIIF"
+    Sheets("general").Cells(2, 3) = "debito"
+    Sheets("general").Cells(2, 4) = "credito"
+    Sheets("general").Cells(2, 5) = "saldo"
+    
+    'convertimos el formato a dinero para mejor lectura
+    Sheets("general").Range("C:C").Style = "Currency"
+    Sheets("general").Range("D:D").Style = "Currency"
+    Sheets("general").Range("E:E").Style = "Currency"
+    
+    
+    Sheets("general").Range("A1").EntireRow.Insert
+    
+    'fecha inicio registros
+    Sheets("general").Range("A1") = "fecha inicio"
+    Sheets("general").Range("B1") = hojaDeTaller.Range("a2")
+    Sheets("general").Range("B1").NumberFormat = "yyyy-mm-dd"
+    
+    'fecho fin registros
+    Sheets("general").Range("D1") = "fecha inicio"
+    Sheets("general").Range("E1") = hojaDeTaller.Cells((hojaDeTaller.Application.WorksheetFunction.CountA(hojaDeTaller.Range("A:A"))), 1)
+    Sheets("general").Range("E1").NumberFormat = "yyyy-mm-dd"
+    
 End Sub
 

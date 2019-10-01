@@ -1,5 +1,5 @@
-Attribute VB_Name = "Módulo1"
-Sub consolidadoporCC()
+Attribute VB_Name = "Módulo4"
+Sub consolidadoporCCompleto()
   
   Dim hojaDeArany As Worksheet
     Set hojaDeArany = Sheets("aranysport")
@@ -34,7 +34,7 @@ Sub consolidadoporCC()
     Set limpieza = Sheets("operaciones").Range("p1")
     
     Dim ccEvaluado As String
-    ccEvaluado = CCAEvaluar.Cells((Sheets("base").Range("M2").Value)).Value
+    ccEvaluado = Sheets("base").Range("M4").Value
     'aqui tomamos el valor correspondiente a el cc desde el combobox
     
     ' creamos lo hoja de el centro de costo asociado
@@ -49,8 +49,18 @@ Sub consolidadoporCC()
     'variable de control para no espacios es blanco
     u = 2
     
+    
+    Dim valores() As String
+    Dim limite As Integer
+    limite = 3
+    
+    ReDim valores(limite) As String
         
-        
+    For p = 0 To limite
+        valores(p) = (ccEvaluado * 10) + p + 1
+    Next p
+    
+    
     For i = 1 To cuentasAEvaluar.Application.WorksheetFunction.CountA(cuentasAEvaluar)
         
         'limpiamos la hoja para evitar errores
@@ -60,31 +70,33 @@ Sub consolidadoporCC()
        
         cuentaEvaluada = cuentasAEvaluar.Cells(i, 1)
         
+            hojaDeArany.UsedRange.AutoFilter 5, valores(), xlFilterValues
+            
             hojaDeArany.UsedRange.AutoFilter 4, cuentaEvaluada
-            hojaDeArany.UsedRange.AutoFilter 5, ccEvaluado
             
             hojaDeArany.UsedRange.Copy hojaDeOperaciones.Range("A1")
             
             hojaDeArany.AutoFilterMode = False
-        'como los datos estan en texto los comvertimos a numero limpiando los valores de caracteres no imprimibles
-           
+        
+        'por si los datos no esta en el formato correcto
+        
+         For h = 2 To Application.WorksheetFunction.CountA(hojaDeOperaciones.Range("D:D"))
+        
+            If hojaDeOperaciones.Cells(h, 11) <> "" Then
+                limpieza = hojaDeOperaciones.Cells(h, 11)
+                hojaDeOperaciones.Cells(h, 11) = Application.WorksheetFunction.Clean(limpieza)
+            End If
+            If hojaDeOperaciones.Cells(h, 12) <> "" Then
+                limpieza = hojaDeOperaciones.Cells(h, 12)
+                hojaDeOperaciones.Cells(h, 12) = Application.WorksheetFunction.Clean(limpieza)
+            End If
+            If hojaDeOperaciones.Cells(h, 13) <> "" Then
+                limpieza = hojaDeOperaciones.Cells(h, 13)
+                hojaDeOperaciones.Cells(h, 13) = Application.WorksheetFunction.Clean(limpieza)
+            End If
             
-           For h = 2 To Application.WorksheetFunction.CountA(hojaDeOperaciones.Range("D:D"))
-           
-               If hojaDeOperaciones.Cells(h, 11) <> "" Then
-                   limpieza = hojaDeOperaciones.Cells(h, 11)
-                   hojaDeOperaciones.Cells(h, 11) = Application.WorksheetFunction.Clean(limpieza)
-               End If
-               If hojaDeOperaciones.Cells(h, 12) <> "" Then
-                   limpieza = hojaDeOperaciones.Cells(h, 12)
-                   hojaDeOperaciones.Cells(h, 12) = Application.WorksheetFunction.Clean(limpieza)
-               End If
-               If hojaDeOperaciones.Cells(h, 13) <> "" Then
-                   limpieza = hojaDeOperaciones.Cells(h, 13)
-                   hojaDeOperaciones.Cells(h, 13) = Application.WorksheetFunction.Clean(limpieza)
-               End If
-               
-               Next h
+            Next h
+            
             
         'con los datos en un atabla aparte entonces vamos a hacer las sumas correspondientes para los rangos
         
@@ -106,35 +118,33 @@ Sub consolidadoporCC()
          'vamos a recorer el arreglo de cuentas y hacer un filtrado por cuenta para sacar la sumatoria de valores
         
          cuentaEvaluada = cuentasAEvaluar.Cells(i, 1)
-         
+            
+             hojaDeTaller.UsedRange.AutoFilter 5, valores(), xlFilterValues
+             
              hojaDeTaller.UsedRange.AutoFilter 4, cuentaEvaluada
-             hojaDeTaller.UsedRange.AutoFilter 5, ccEvaluado
              
              hojaDeTaller.UsedRange.Copy hojaDeOperaciones.Range("A1")
              
              hojaDeTaller.AutoFilterMode = False
              
-         'como los datos estan en texto los comvertimos a numero limpiando los valores de caracteres no imprimibles
-            
+        'por si los datos no esta en el formato correcto
+        
+         For h = 2 To Application.WorksheetFunction.CountA(hojaDeOperaciones.Range("D:D"))
              
-            For h = 2 To Application.WorksheetFunction.CountA(hojaDeOperaciones.Range("D:D"))
-            
-                If hojaDeOperaciones.Cells(h, 11) <> "" Then
-                    limpieza = hojaDeOperaciones.Cells(h, 11)
-                    hojaDeOperaciones.Cells(h, 11) = Application.WorksheetFunction.Clean(limpieza)
-                End If
-                If hojaDeOperaciones.Cells(h, 12) <> "" Then
-                    limpieza = hojaDeOperaciones.Cells(h, 12)
-                    hojaDeOperaciones.Cells(h, 12) = Application.WorksheetFunction.Clean(limpieza)
-                End If
-                If hojaDeOperaciones.Cells(h, 13) <> "" Then
-                    limpieza = hojaDeOperaciones.Cells(h, 13)
-                    hojaDeOperaciones.Cells(h, 13) = Application.WorksheetFunction.Clean(limpieza)
-                End If
-                
-                Next h
-             
-             
+                 If hojaDeOperaciones.Cells(h, 11) <> "" Then
+                     limpieza = hojaDeOperaciones.Cells(h, 11)
+                     hojaDeOperaciones.Cells(h, 11) = Application.WorksheetFunction.Clean(limpieza)
+                 End If
+                 If hojaDeOperaciones.Cells(h, 12) <> "" Then
+                     limpieza = hojaDeOperaciones.Cells(h, 12)
+                     hojaDeOperaciones.Cells(h, 12) = Application.WorksheetFunction.Clean(limpieza)
+                 End If
+                 If hojaDeOperaciones.Cells(h, 13) <> "" Then
+                     limpieza = hojaDeOperaciones.Cells(h, 13)
+                     hojaDeOperaciones.Cells(h, 13) = Application.WorksheetFunction.Clean(limpieza)
+                 End If
+                 
+                 Next h
              
         'con los datos en un atabla aparte entonces vamos a hacer las sumas correspondientes para los rangos
          
@@ -227,4 +237,5 @@ Sub consolidadoporCC()
     
 
 End Sub
+
 
